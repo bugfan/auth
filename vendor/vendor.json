@@ -63,10 +63,34 @@
 			"revisionTime": "2016-12-05T15:14:26Z"
 		},
 		{
+			"checksumSHA1": "daJDECVhkOxE8t0wYCJ053nJWLM=",
+			"path": "github.com/bugfan/logrus",
+			"revision": "f8627d12948f98c67a5f2c32d1861fb2396aeb1c",
+			"revisionTime": "2017-10-31T09:45:33Z"
+		},
+		{
+			"checksumSHA1": "ZTxx2g+GvvUyrb4r3bhUoZvzA4U=",
+			"path": "github.com/bugfan/to",
+			"revision": "d8d07055f0522d7fa9d25e229feb8bc833c44b49",
+			"revisionTime": "2015-02-14T02:17:43Z"
+		},
+		{
 			"checksumSHA1": "k9izYoyobR8Upb3Yjsw9htgE/Mk=",
 			"path": "github.com/go-sql-driver/mysql",
 			"revision": "99ff426eb706cffe92ff3d058e168b278cabf7c7",
 			"revisionTime": "2018-07-19T07:19:42Z"
+		},
+		{
+			"checksumSHA1": "xQB1ffLIPTQfsEuHLLjGTP14HW4=",
+			"path": "github.com/gogap/errors",
+			"revision": "149c546090d0ac947ee5f6772d431e30cf0f6f3b",
+			"revisionTime": "2016-05-23T10:23:34Z"
+		},
+		{
+			"checksumSHA1": "tZQx/YVC62zwRXUr4CJYUFAWBQA=",
+			"path": "github.com/gogap/stack",
+			"revision": "fef68dddd4f8092a1be1acacb121f847315e5c94",
+			"revisionTime": "2015-01-31T03:46:35Z"
 		},
 		{
 			"checksumSHA1": "xvqMCXXlR74in/1c09UadpfXz9Y=",
@@ -79,6 +103,17 @@
 			"path": "github.com/lib/pq/oid",
 			"revision": "4ded0e9383f75c197b3a2aaa6d590ac52df6fd79",
 			"revisionTime": "2018-08-23T06:29:44Z"
+		},
+		{
+			"checksumSHA1": "61HNjGetaBoMp8HBOpuEZRSim8g=",
+			"path": "github.com/mattn/go-sqlite3",
+			"revision": "acfa60124032040b9f5a9406f5a772ee16fe845e",
+			"revisionTime": "2017-07-05T08:25:03Z"
+		},
+		{
+			"checksumSHA1": "GtamqiJoL7PGHsN454AoffBFMa8=",
+			"path": "golang.org/x/net/context",
+			"revision": ""
 		}
 	],
 	"rootPath": "auth"

@@ -1,3 +1,4 @@
 auth
 *.exe
 *.so
+*.db

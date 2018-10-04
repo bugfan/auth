@@ -193,7 +193,7 @@ var errtpl = `
 					{{.Content}}
 					<a href="/" title="Home" class="button">Go Home</a><br />
 
-					<br>Powered by beego {{.BeegoVersion}}
+					<br>Stop!!!
 				</div>
 			</div>
 		</div>
