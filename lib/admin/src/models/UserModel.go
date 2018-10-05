@@ -80,7 +80,7 @@ func AddUser(u *User) (int64, error) {
 	o := orm.NewOrm()
 	user := new(User)
 	user.Username = u.Username
-	user.Password = Strtomd5(u.Password)
+	user.Password = Pwdhash(u.Password)
 	user.Nickname = u.Nickname
 	user.Email = u.Email
 	user.Remark = u.Remark
@@ -110,7 +110,7 @@ func UpdateUser(u *User) (int64, error) {
 		user["Remark"] = u.Remark
 	}
 	if len(u.Password) > 0 {
-		user["Password"] = Strtomd5(u.Password)
+		user["Password"] = Pwdhash(u.Password)
 	}
 	if u.Status != 0 {
 		user["Status"] = u.Status
