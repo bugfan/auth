@@ -5,6 +5,9 @@ var statuslist = [
     {statusid:'2',name:'启用'}
 ];
 var URL="/rbac/user";
+var userid;
+var salt=999997;    //my salt
+var salt2=007;    
 $(function(){
     //用户列表
     $("#datagrid").datagrid({
@@ -19,11 +22,31 @@ $(function(){
         idField:'Id',
         pagination:true,
         pageSize:20,
-        pageList:[10,20,30,50,100],
+        pageList:[1,10,20,30,50,100],
         columns:[[
-            {field:'Id',title:'ID',width:50,sortable:true},
+            {field:'Id',title:'ID',width:50,sortable:true,
+                formatter: function(value) {
+                    userid=value;
+                }
+            },
             {field:'Username',title:'用户名',width:100,sortable:true},
             {field:'Nickname',title:'昵称',width:100,align:'center',editor:'text'},
+            {field:'Authority',title:'权限列表',width:100,align:'center',
+            // {field:'Photo',title:'照片',width:300,align:'center',
+                formatter: function(value,row,index) {
+                    if (value.length == 0) {
+                        return;
+                    };
+                    var body = '<div id="'+userid+''+salt+'">';
+                    for (var i=0; i < value.length; i++) {
+                        body += '<a>'+value[i].Name+'</a>'+' ';
+                    };
+                    body += '<input type="button" onclick="modi('+userid+''+salt+');" value="修改"/>';
+                    // body += '<a href="#" data-toggle="modal" data-target="#authframe">about</a>';
+                    body += '</div>';
+                    return body;
+                }
+            },
             {field:'Email',title:'Email',width:100,align:'center',editor:'text'},
             {field:'Remark',title:'备注',width:150,align:'center',editor:'text'},
             {field:'Lastlogintime',title:'上次登录时间',width:100,align:'center',
@@ -152,7 +175,43 @@ $(function(){
     });
 
 })
-
+function modi(id){
+    console.log("日志:",id);
+    p=document.getElementById(id);
+    if (!p){
+        return;
+    }
+    n=p.childNodes;
+    if (!n){
+        return;
+    }
+    var strs=[];
+    for(i=0;i<n.length;i++){
+        if (n[i].tagName=='A'){
+            con=n[i].innerHTML;
+            if (con==null ||con==""){
+                continue;
+            }
+            strs.push(con);
+        }
+    }
+    obj=document.getElementById("authframe");
+    for(i=0;i<strs.length;i++){
+        sp=getEle(strs[i],id+i.toString());
+        console.log("span:",sp.value);
+        obj.appendChild(sp);
+        obj.appendChild(document.createTextNode("  "));
+    }
+    obj.style.display='block';
+    console.log("数组:",strs);
+}
+function getEle(str,id){
+   o=document.createElement('div');
+   o.setAttribute("id",id);
+   o.innerHTML='<a href="javascript:delEle('+id+'x)">'+str+'</a>';
+   return o;
+}
+function getEle()
 function editrow(){
     if(!$("#datagrid").datagrid("getSelected")){
         vac.alert("请选择要编辑的行");
@@ -295,6 +354,9 @@ function delrow(){
             </tr>
         </table>
     </div>
+</div>
+<div id="authframe" style="display:block;position: absolute;background-color:gray;border:3px solid rgb(230, 8, 8); overflow: hidden;">
+ 
 </div>
 </body>
 </html>

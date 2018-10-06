@@ -8,7 +8,7 @@ var URL="/rbac/user";
 $(function(){
     //用户列表
     $("#datagrid").datagrid({
-        title:'用户列表',
+        title:'用户列表3',
         url:URL+'/index',
         method:'POST',
         pagination:true,

@@ -1,7 +1,10 @@
 package rbac
 
 import (
+	"auth/lib/admin/src/models"
 	m "auth/lib/admin/src/models"
+
+	"github.com/astaxie/beego/orm"
 )
 
 type UserController struct {
@@ -21,14 +24,19 @@ func (this *UserController) Index() {
 		sort = "Id"
 	}
 	users, count := m.Getuserlist(page, page_size, sort)
+	users2 := []orm.Params{}
+	for _, v := range users {
+		v["Authority"] = []models.Authority{models.Authority{Name: "test"}, models.Authority{Name: "admin"}, models.Authority{Name: "hh"}}
+		users2 = append(users2, v)
+	}
 	if this.IsAjax() {
-		this.Data["json"] = &map[string]interface{}{"total": count, "rows": &users}
+		this.Data["json"] = &map[string]interface{}{"total": count, "rows": &users2}
 		this.ServeJSON()
 		return
 	} else {
 		tree := this.GetTree()
 		this.Data["tree"] = &tree
-		this.Data["users"] = &users
+		this.Data["users"] = &users2
 		if this.GetTemplatetype() != "easyui" {
 			this.Layout = this.GetTemplatetype() + "/public/layout.tpl"
 		}
