@@ -37,12 +37,15 @@ $(function(){
                     if (value.length == 0) {
                         return;
                     };
-                    var body = '<div id="'+userid+''+salt+'">';
+                    var body = '<div id="'+userid+salt.toString()+'">';
                     for (var i=0; i < value.length; i++) {
-                        body += '<a>'+value[i].Name+'</a>'+' ';
+                        body += value[i].Name;
+                        if(i==value.length-1){
+                            break;
+                        }
+                        body +=',';
                     };
-                    body += '<input type="button" onclick="modi('+userid+''+salt+');" value="修改"/>';
-                    // body += '<a href="#" data-toggle="modal" data-target="#authframe">about</a>';
+                    body += ' <input type="button" onclick="modi('+userid+salt.toString()+');" value="修改"/>';
                     body += '</div>';
                     return body;
                 }
@@ -175,43 +178,38 @@ $(function(){
     });
 
 })
+function optTag(strs,id){
+      $("#tag").innerHTML="";
+      $("#tag").tabControl({maxTabCount:5,tabW:80},strs);
+	  $("#getTab").click(function(){
+          var v = $("#tag").getTabVals();
+          ret=v.join(",");
+          console.log("get tag:",ret);
+          document.getElementById(id).innerHTML=ret.toString()+' <input type="button" onclick="modi('+id+');" value="修改"/>';
+          document.getElementById("auth").style.display='none';
+	  });
+}
 function modi(id){
     console.log("日志:",id);
     p=document.getElementById(id);
     if (!p){
         return;
     }
-    n=p.childNodes;
-    if (!n){
-        return;
-    }
-    var strs=[];
-    for(i=0;i<n.length;i++){
-        if (n[i].tagName=='A'){
-            con=n[i].innerHTML;
-            if (con==null ||con==""){
-                continue;
-            }
-            strs.push(con);
+    con=p.innerHTML.split('<');
+    con1=con[0];
+    con2=con1.split(',');
+    strs="";
+    for (i=0;i<con2.length;i++){
+        strs +=con2[i]
+        if (i==con2.length-1){
+            break;
         }
+        strs+=',';
     }
-    obj=document.getElementById("authframe");
-    for(i=0;i<strs.length;i++){
-        sp=getEle(strs[i],id+i.toString());
-        console.log("span:",sp.value);
-        obj.appendChild(sp);
-        obj.appendChild(document.createTextNode("  "));
-    }
-    obj.style.display='block';
-    console.log("数组:",strs);
+    console.log("权限数组:",strs);
+    document.getElementById("auth").style.display='block';
+    optTag(strs+',,',id);
 }
-function getEle(str,id){
-   o=document.createElement('div');
-   o.setAttribute("id",id);
-   o.innerHTML='<a href="javascript:delEle('+id+'x)">'+str+'</a>';
-   return o;
-}
-function getEle()
 function editrow(){
     if(!$("#datagrid").datagrid("getSelected")){
         vac.alert("请选择要编辑的行");
@@ -355,8 +353,9 @@ function delrow(){
         </table>
     </div>
 </div>
-<div id="authframe" style="display:block;position: absolute;background-color:gray;border:3px solid rgb(230, 8, 8); overflow: hidden;">
- 
+<div id="auth" style="display: none;margin-left: 200;background-color:gray;width: 80%;height: 15%;">
+    <div id="tag" style=""></div>
+    <input id='getTab' style="margin-left: 14px;height: 28px;" type="button" value="保存"/>
 </div>
 </body>
 </html>
