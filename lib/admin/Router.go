@@ -15,6 +15,7 @@ func router() {
 
 	beego.Router("/rbac/user/AddUser", &rbac.UserController{}, "*:AddUser")
 	beego.Router("/rbac/user/UpdateUser", &rbac.UserController{}, "*:UpdateUser")
+	beego.Router("/rbac/user/UpdateUserAuth", &rbac.UserController{}, "*:UpdateUserAuth")
 	beego.Router("/rbac/user/DelUser", &rbac.UserController{}, "*:DelUser")
 	beego.Router("/rbac/user/index", &rbac.UserController{}, "*:Index")
 

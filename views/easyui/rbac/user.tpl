@@ -34,10 +34,7 @@ $(function(){
             {field:'Authority',title:'权限列表',width:100,align:'center',
             // {field:'Photo',title:'照片',width:300,align:'center',
                 formatter: function(value,row,index) {
-                    if (value.length == 0) {
-                        return;
-                    };
-                    var body = '<div id="'+userid+salt.toString()+'">';
+                    var body = '<div id="'+userid+salt.toString()+'" style="overflow:auto">';
                     for (var i=0; i < value.length; i++) {
                         body += value[i].Name;
                         if(i==value.length-1){
@@ -178,19 +175,44 @@ $(function(){
     });
 
 })
+function getSrcId(id){
+    ids=id.toString();
+    saltLen=salt.toString().length;
+    idLen=ids.length;
+    if (idLen<saltLen){
+        return id;
+    }
+    return parseInt(ids.substring(0,idLen-saltLen));
+}
+var xhr=new XMLHttpRequest();  //new a xhr
 function optTag(strs,id){
       $("#tag").innerHTML="";
       $("#tag").tabControl({maxTabCount:5,tabW:80},strs);
 	  $("#getTab").click(function(){
           var v = $("#tag").getTabVals();
           ret=v.join(",");
-          console.log("get tag:",ret);
+          srcid=getSrcId(id);
+          auths=[];
+          for(i=0;i<v.length;i++){
+              auths.push({User:{Id:srcid},Name:v[i]});
+          }
+          authsJson=JSON.stringify(auths);
+          console.log("get tag:",authsJson);
+          xhr.open('post',URL+'/UpdateUserAuth',true);
+          xhr.setRequestHeader("Content-Type","application/json");
+          xhr.send(authsJson); //发请求send(里面放数据)
+          xhr.onreadystatechange=function(){
+            if (xhr.readyState==4){
+                if (xhr.status==200){
+                    console.log(xhr.responseText);
+                }
+            }
+          }
           document.getElementById(id).innerHTML=ret.toString()+' <input type="button" onclick="modi('+id+');" value="修改"/>';
           document.getElementById("auth").style.display='none';
 	  });
 }
 function modi(id){
-    console.log("日志:",id);
     p=document.getElementById(id);
     if (!p){
         return;
@@ -207,7 +229,9 @@ function modi(id){
         strs+=',';
     }
     console.log("权限数组:",strs);
-    document.getElementById("auth").style.display='block';
+    auth=document.getElementById("auth");
+    auth.innerHTML='<div id="tag" style=""></div><input id="getTab" style="margin-left: 14px;height: 28px;" type="button" value="保存"/>';
+    auth.style.display='block';
     optTag(strs+',,',id);
 }
 function editrow(){
@@ -354,8 +378,7 @@ function delrow(){
     </div>
 </div>
 <div id="auth" style="display: none;margin-left: 200;background-color:gray;width: 80%;height: 15%;">
-    <div id="tag" style=""></div>
-    <input id='getTab' style="margin-left: 14px;height: 28px;" type="button" value="保存"/>
+    
 </div>
 </body>
 </html>

@@ -25,7 +25,7 @@ type User struct {
 	Lastlogintime time.Time    `orm:"null;type(datetime)" form:"-"`
 	Createtime    time.Time    `orm:"type(datetime);auto_now_add" `
 	Role          []*Role      `orm:"rel(m2m)"`
-	Authority     []*Authority `orm:"reverse(many)"`
+	Authority     []*Authority `json:"Authority" orm:"reverse(many)"`
 }
 
 func (u *User) TableName() string {
@@ -70,6 +70,15 @@ func Getuserlist(page int64, page_size int64, sort string) (users []orm.Params, 
 	}
 	qs.Limit(page_size, offset).OrderBy(sort).Values(&users)
 	count, _ = qs.Count()
+	auth := new(Authority)
+	for _, v := range users {
+		auths := []*Authority{}
+		_, err := o.QueryTable(auth).Filter("user_id", v["Id"]).All(&auths)
+		if err != nil {
+			log.Println("sql err:", err)
+		}
+		v["Authority"] = &auths
+	}
 	return users, count
 }
 

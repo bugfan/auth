@@ -3,8 +3,8 @@ package rbac
 import (
 	"auth/lib/admin/src/models"
 	m "auth/lib/admin/src/models"
-
-	"github.com/astaxie/beego/orm"
+	"encoding/json"
+	"io/ioutil"
 )
 
 type UserController struct {
@@ -24,19 +24,14 @@ func (this *UserController) Index() {
 		sort = "Id"
 	}
 	users, count := m.Getuserlist(page, page_size, sort)
-	users2 := []orm.Params{}
-	for _, v := range users {
-		v["Authority"] = []models.Authority{models.Authority{Name: "test"}, models.Authority{Name: "admin"}, models.Authority{Name: "hh"}}
-		users2 = append(users2, v)
-	}
 	if this.IsAjax() {
-		this.Data["json"] = &map[string]interface{}{"total": count, "rows": &users2}
+		this.Data["json"] = &map[string]interface{}{"total": count, "rows": &users}
 		this.ServeJSON()
 		return
 	} else {
 		tree := this.GetTree()
 		this.Data["tree"] = &tree
-		this.Data["users"] = &users2
+		this.Data["users"] = &users
 		if this.GetTemplatetype() != "easyui" {
 			this.Layout = this.GetTemplatetype() + "/public/layout.tpl"
 		}
@@ -79,6 +74,22 @@ func (this *UserController) UpdateUser() {
 		return
 	}
 
+}
+
+func (this *UserController) UpdateUserAuth() {
+	body := this.Ctx.Request.Body
+	bs, err := ioutil.ReadAll(body)
+	auths := make([]*models.Authority, 0, 3)
+	err = json.Unmarshal(bs, &auths)
+
+	id, err := models.UpdateUserAuth(auths)
+	if err == nil && id > 0 {
+		this.Rsp(true, "Success")
+		return
+	} else {
+		this.Rsp(false, err.Error())
+		return
+	}
 }
 
 func (this *UserController) DelUser() {
