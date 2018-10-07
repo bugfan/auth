@@ -1,13 +1,12 @@
-package com
+package util
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
-
-	"github.com/bugfan/logrus"
 )
 
 func HasValues(data map[string]interface{}, keys ...string) error {
@@ -35,7 +34,7 @@ func GetCtxJson(r *http.Request) string {
 func JsonToMap(val []byte) map[string]interface{} {
 	data := make(map[string]interface{})
 	json.Unmarshal(val, &data)
-	logrus.Println("[IN] ", data)
+	log.Println("[IN] ", data)
 	return data
 }
 func ToJsonString(v interface{}) string {
