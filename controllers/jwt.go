@@ -23,7 +23,7 @@ func (c *JWTController) Post() {
 	user, err := src.CheckLogin(m["username"], m["password"])
 	if err != nil {
 		c.Data["Status"] = 401
-		c.Data["Msg"] = "帐号密码错误!"
+		c.Data["Msg"] = err
 		return
 	}
 
