@@ -11,7 +11,7 @@ import (
 func init() {
 	admin.Run()
 	beego.Router("/test", &controllers.MainController{})
-	beego.Router("/api/jwt/user/login", &controllers.JWTController{})
-	beego.Router("/api/jwt/user/logout", &controllers.JWTController{})
-	beego.Router("/api/jwt/user/chpwd", &controllers.JWTController{})
+	beego.Post("/login", controllers.Login)
+	beego.Post("/logout", controllers.Logout)
+	beego.Post("/chpwd", controllers.ChangePassword)
 }
