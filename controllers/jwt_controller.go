@@ -1,12 +1,13 @@
 package controllers
 
 import (
+	"auth/db/redis"
 	"auth/lib/admin/src"
 	com "auth/util"
 	"auth/util/jwt"
 	"encoding/json"
 	"io/ioutil"
-	"log"
+	"time"
 
 	"github.com/astaxie/beego/context"
 	"github.com/bugfan/to"
@@ -18,7 +19,6 @@ func Login(ctx *context.Context) {
 	// err := json.Unmarshal(c.Ctx.Input.RequestBody, &m) beego和beego/context区别在于读取body
 	body, _ := ioutil.ReadAll(ctx.Request.Body)
 	err := json.Unmarshal(body, &m)
-	log.Println("login", err, m)
 	if err != nil {
 		ctx.WriteString(com.ToJsonString(com.Result{
 			Status: 401,
@@ -44,8 +44,15 @@ func Login(ctx *context.Context) {
 	jwtStr, err := jwt.GetJWT(string(authBs))
 	if err != nil {
 		ctx.WriteString(com.ToJsonString(com.Result{
-			Status: 401,
+			Status: 500,
 			Msg:    to.String(err),
+		}))
+		return
+	}
+	if !redis.JWT.Set(user.Username, jwtStr, time.Duration(jwt.Conf.Expire)*1e9) {
+		ctx.WriteString(com.ToJsonString(com.Result{
+			Status: 500,
+			Msg:    "缓存设置失败",
 		}))
 		return
 	}
@@ -64,6 +71,45 @@ func ChangePassword(ctx *context.Context) {
 	}))
 }
 func Logout(ctx *context.Context) {
+	m := make(map[string]string)
+	body, _ := ioutil.ReadAll(ctx.Request.Body)
+	err := json.Unmarshal(body, &m)
+	if err != nil {
+		ctx.WriteString(com.ToJsonString(com.Result{
+			Status: 401,
+			Msg:    "请求参数不正确",
+		}))
+		return
+	}
+	t := to.String(m["jwt"])
+	bodyStr, err := jwt.VerifyJWT(t)
+	if err != nil {
+		ctx.WriteString(com.ToJsonString(com.Result{
+			Status: 401,
+			Msg:    "请求参数不正确",
+		}))
+		return
+	}
+	type User struct {
+		Username string
+	}
+	u := &User{}
+	err = json.Unmarshal([]byte(bodyStr), u)
+	if err != nil && u.Username == "" {
+		ctx.WriteString(com.ToJsonString(com.Result{
+			Status: 401,
+			Msg:    "请求参数不正确",
+		}))
+		return
+	}
+	if u.Username == "" {
+		ctx.WriteString(com.ToJsonString(com.Result{
+			Status: 401,
+			Msg:    "请求参数不正确",
+		}))
+		return
+	}
+	redis.JWT.Del(u.Username)
 	ctx.WriteString(com.ToJsonString(com.Result{
 		Status: 200,
 		Msg:    "成功",
