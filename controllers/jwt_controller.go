@@ -49,7 +49,7 @@ func Login(ctx *context.Context) {
 		}))
 		return
 	}
-	if !redis.JWT.Set(user.Username, jwtStr, time.Duration(jwt.Conf.Expire)*1e9) {
+	if !redis.JWT.Set(user.Username, jwtStr, time.Duration(jwt.GetConfig().Expire)*1e9) {
 		ctx.WriteString(com.ToJsonString(com.Result{
 			Status: 500,
 			Msg:    "缓存设置失败",
