@@ -19,3 +19,6 @@
 2. 执行 `docker build -t xxxx .` 构建镜像到自己机器
 3. 执行 `docker-compose up -d` 首先会拉依赖的数据镜像 完成之后会自动启动
 4. 在浏览器访问 `127.0.0.1:5000` 即可看到页面,默认帐号/密码:admin/admin 
+
+## 效果
+![Alt text](./img.jpg)
