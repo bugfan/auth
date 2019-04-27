@@ -4,6 +4,7 @@ import (
 	"auth/db/redis"
 	_ "auth/routers"
 	"auth/util/jwt"
+	"log"
 	"os"
 	"runtime"
 
@@ -13,16 +14,17 @@ import (
 
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	// 读环境变量
-	if os.Getenv("ENV_FILE") != "" {
-		goini.Env = goini.NewMyEnv(os.Getenv("ENV_FILE")) // 指定读取路径是否从指定文件读取
+	// ready env
+	if os.Getenv("AUTH_ENV") != "" {
+		goini.Env = goini.NewEnv(os.Getenv("AUTH_ENV")) // read from file
 	} else {
-		goini.Env = goini.NewMyEnv() // 不指定文件，读取默认环境变量
+		goini.Env = goini.NewEnv() // read from sys env
 	}
 }
 func main() {
-	redis.JWT = &redis.Redis{} // 链接redis
-	redis.JWT.ConnRedis(("auth"))
-	jwt.InitJWTConf() // 初始化配置
+	redis.JWT.ConnRedis("auth") // link auth redis
+	jwt.InitJWTConf()           // init jwt config
+	j, ee := jwt.GetJWT3(map[string]string{"zxy": "90"})
+	log.Println("JWT:", ee, j)
 	beego.Run()
 }

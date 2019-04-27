@@ -11,8 +11,11 @@ import (
 	"gopkg.in/redis.v5"
 )
 
-// web jwt 链接
-var JWT *Redis
+var JWT *Redis // web jwt 链接
+
+func init() {
+	JWT = new(Redis)
+}
 
 // Redis redis连接对象
 type Redis struct {
@@ -41,7 +44,7 @@ func (rc *Redis) ConnRedis(project string) {
 		options.Password = p
 	}
 	rc.RedisCluster = redis.NewClient(&options)
-	if rc.Set("test", 1, 1000000000) {
+	if rc.Set("bar", 1, 1000000000) {
 		log.Println("Redis Init Succeeded!")
 	} else {
 		log.Fatal("Redis Init Failed!")
@@ -59,6 +62,6 @@ func (rc *Redis) getRedisAddrs(project string) []string {
 	return addrs
 }
 func (rc *Redis) readEnv() (map[string]string, error) {
-	m := goini.Env.GetAllenv()
+	m := goini.Env.GetAll()
 	return m, nil
 }
