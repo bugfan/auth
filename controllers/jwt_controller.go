@@ -1,13 +1,11 @@
 package controllers
 
 import (
-	"auth/db/redis"
 	"auth/lib/admin/src"
-	com "auth/util"
-	"auth/util/jwt"
+	"auth/utils/jwt"
 	"encoding/json"
 	"io/ioutil"
-	"time"
+	"themis/utils"
 
 	"github.com/astaxie/beego/context"
 	"github.com/bugfan/to"
@@ -20,7 +18,7 @@ func Login(ctx *context.Context) {
 	body, _ := ioutil.ReadAll(ctx.Request.Body)
 	err := json.Unmarshal(body, &m)
 	if err != nil {
-		ctx.WriteString(com.ToJsonString(com.Result{
+		ctx.WriteString(utils.ToJsonString(utils.Result{
 			Status: 401,
 			Msg:    "请求参数不正确!",
 		}))
@@ -28,7 +26,7 @@ func Login(ctx *context.Context) {
 	}
 	user, err := src.CheckLogin(m["username"], m["password"])
 	if err != nil {
-		ctx.WriteString(com.ToJsonString(com.Result{
+		ctx.WriteString(utils.ToJsonString(utils.Result{
 			Status: 401,
 			Msg:    "认证失败!", // 看了上野宣的 《图解http》,觉得应该不暴露详细错误了
 		}))
@@ -43,20 +41,13 @@ func Login(ctx *context.Context) {
 	authBs, err := json.Marshal(authMap)
 	jwtStr, err := jwt.GetJWT(string(authBs))
 	if err != nil {
-		ctx.WriteString(com.ToJsonString(com.Result{
+		ctx.WriteString(utils.ToJsonString(utils.Result{
 			Status: 500,
 			Msg:    to.String(err),
 		}))
 		return
 	}
-	if !redis.JWT.Set(user.Username, jwtStr, time.Duration(jwt.GetConfig().Expire)*1e9) {
-		ctx.WriteString(com.ToJsonString(com.Result{
-			Status: 500,
-			Msg:    "缓存设置失败",
-		}))
-		return
-	}
-	ctx.WriteString(com.ToJsonString(com.Result{
+	ctx.WriteString(utils.ToJsonString(utils.Result{
 		Status: 200,
 		Data:   to.String(jwtStr),
 		Msg:    "成功",
@@ -65,7 +56,7 @@ func Login(ctx *context.Context) {
 }
 
 func ChangePassword(ctx *context.Context) {
-	ctx.WriteString(com.ToJsonString(com.Result{
+	ctx.WriteString(utils.ToJsonString(utils.Result{
 		Status: 200,
 		Msg:    "成功",
 	}))
@@ -75,7 +66,7 @@ func Logout(ctx *context.Context) {
 	body, _ := ioutil.ReadAll(ctx.Request.Body)
 	err := json.Unmarshal(body, &m)
 	if err != nil {
-		ctx.WriteString(com.ToJsonString(com.Result{
+		ctx.WriteString(utils.ToJsonString(utils.Result{
 			Status: 401,
 			Msg:    "请求参数不正确",
 		}))
@@ -84,7 +75,7 @@ func Logout(ctx *context.Context) {
 	t := to.String(m["jwt"])
 	bodyStr, err := jwt.VerifyJWT(t)
 	if err != nil {
-		ctx.WriteString(com.ToJsonString(com.Result{
+		ctx.WriteString(utils.ToJsonString(utils.Result{
 			Status: 401,
 			Msg:    "请求参数不正确",
 		}))
@@ -96,21 +87,20 @@ func Logout(ctx *context.Context) {
 	u := &User{}
 	err = json.Unmarshal([]byte(bodyStr), u)
 	if err != nil && u.Username == "" {
-		ctx.WriteString(com.ToJsonString(com.Result{
+		ctx.WriteString(utils.ToJsonString(utils.Result{
 			Status: 401,
 			Msg:    "请求参数不正确",
 		}))
 		return
 	}
 	if u.Username == "" {
-		ctx.WriteString(com.ToJsonString(com.Result{
+		ctx.WriteString(utils.ToJsonString(utils.Result{
 			Status: 401,
 			Msg:    "请求参数不正确",
 		}))
 		return
 	}
-	redis.JWT.Del(u.Username)
-	ctx.WriteString(com.ToJsonString(com.Result{
+	ctx.WriteString(utils.ToJsonString(utils.Result{
 		Status: 200,
 		Msg:    "成功",
 	}))
